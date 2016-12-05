@@ -1,7 +1,9 @@
 //'Hello World' netfilter hooks example based a three-part blog by Paul Kiddie
 //   www.paulkiddie.com/2009/10/creating-a-simple-hello-world-netfilter-module/
 // and modified by K Shomper for linux 4.4 assignment in CS3320.  Dec 1, 2016.
-// TODO 1: include your own information and date of modification.
+// 
+// Authors : Wesley Kelly & Jimmy Von Eiff
+// Modified: 5 December, 2016
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,15 +31,15 @@ unsigned int hook_funco(void *priv, struct sk_buff *skb,
 							  const struct nf_hook_state *state) {
 
 	//grab network header using accessor
-	ip_header = NULL; // TODO 2:  replace NULL with applicable code ... 
+	ip_header = (struct iphdr *)skb_network_header(skb);
        
 	if (ip_header->protocol == PROTOCOL_ICMP) {
    	//log to dmesg queue indicating an outbound ICMP packet was discovered 
-		// TODO 3: create message here ...
+    printk(KERN_INFO "netfilter: Received an outbound ICMP packet.");
 	}
 
    //allows the packet to proceed
-   return 0; // TODO 4: replace 0 with proper define to keep packet ...
+   return NF_ACCEPT;
 }
 
 //function to be called by nfhi hook operations
@@ -45,19 +47,19 @@ unsigned int hook_funci(void *priv, struct sk_buff *skb,
 							  const struct nf_hook_state *state) {
 
 	//grab network header using accessor
-	ip_header = NULL; // TODO 5: replace NULL with applicable code ... 
+	ip_header = (struct iphdr *)skb_network_header(skb); 
        
  	//grab the incoming ip address
 	char buf[20];
 	union ip_address ip;
-   ip.addr = 0; // TODO 6: replace 0 with actual ip address from skb ... 
+  ip.addr = ip_header->saddr;
 
 	// convert the __be32 address to a typical dotted-notation IP address
 	snprintf(buf, 20, "%d.%d.%d.%d", ip.a[0], ip.a[1], ip.a[2], ip.a[3]);
 
 	// if the ICMP packet is from telehack
 	if (ip_header->protocol==PROTOCOL_ICMP && 
-		 strncmp(buf, "TODO 7: fill-in-IP-address-for-telehack.com", 20)) {
+    strncmp(buf, "64.13.139.230", 20)) {
    	//log to dmesg queue 
    	printk(KERN_WARNING "incoming ICMP packet allowed from telehack.com\n");
 	} else {
@@ -66,7 +68,7 @@ unsigned int hook_funci(void *priv, struct sk_buff *skb,
 	}
 
    //allows the packet to proceed
-   return 0; // TODO 8: replace 0 with proper define to keep packet ...
+   return NF_ACCEPT;
 }
 
 //struct holding set of hook function options for outbound packets
@@ -88,7 +90,20 @@ static struct nf_hook_ops nfhi = {
 //Called when module loaded using 'insmod'
 int init_module() {
    printk(KERN_WARNING "registering net filter\n");
-   // TODO 9:  register hooks
+
+   nfho.hook     = hook_funco;
+   nfho.pf       = PF_INET;
+   nfho.hooknum  = NF_IP_POST_ROUTING;
+   nfho.priority = NF_IP_PRI_FIRST;
+
+   nfhi.hook     = hook_funci;
+   nfhi.pf       = PF_INET;
+   nfhi.hooknum  = NF_IP_PRE_ROUTING;
+   nfhi.priority = NF_IP_PRI_FIRST;
+
+   nf_register_hook(&nfho);
+   nf_register_hook(&nfhi);
+
    printk(KERN_WARNING "registered net filter\n");
 
    //return 0 for success
@@ -98,7 +113,10 @@ int init_module() {
 //Called when module unloaded using 'rmmod'
 void cleanup_module() {
    printk(KERN_WARNING "unregistering net filter\n");
-   // TODO 10:  unregister hooks
+   
+   nf_unregister_hook(&nfho);
+   nf_unregister_hook(&nfhi);
+
    printk(KERN_WARNING "unregistered net filter\n");
 }
 

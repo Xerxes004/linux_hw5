@@ -8,13 +8,21 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/netfilter.h>
-#include <linux/netfilter_ipv4.h>
 #include <linux/ip.h>
 #include <linux/skbuff.h>
 #include <linux/string.h>
+#include <linux/netfilter_ipv4.h>
 
 #define NF_IP_LOCAL_IN    1
 #define NF_IP_LOCAL_OUT   3
+
+#ifndef NF_IP_PRE_ROUTING
+#define NF_IP_PRE_ROUTING 0
+#endif
+
+#ifndef NF_IP_POST_ROUTING
+#define NF_IP_POST_ROUTING 3
+#endif
 
 #define PROTOCOL_ICMP     1
 

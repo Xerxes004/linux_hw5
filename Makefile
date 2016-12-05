@@ -1,6 +1,8 @@
 ifneq ($(KERNELRELEASE),)
 # call from kernel build system
 
+ccflags-y := -std=gnu99 -Wno-declaration-after-statement
+
 nf_mod-objs := netfilter_main.o
 
 obj-m	:= nf_mod.o

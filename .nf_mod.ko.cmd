@@ -1,1 +1,0 @@
-cmd_/home/wes/Documents/projects/linux_hw5/nf_mod.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/wes/Documents/projects/linux_hw5/nf_mod.ko /home/wes/Documents/projects/linux_hw5/nf_mod.o /home/wes/Documents/projects/linux_hw5/nf_mod.mod.o

@@ -16,6 +16,7 @@
 #define NF_IP_LOCAL_IN    1
 #define NF_IP_LOCAL_OUT   3
 
+// Define constants that are broken when linking
 #ifndef NF_IP_PRE_ROUTING
 #define NF_IP_PRE_ROUTING 0
 #endif
@@ -42,8 +43,8 @@ unsigned int hook_funco(void *priv, struct sk_buff *skb,
 	ip_header = (struct iphdr *)skb_network_header(skb);
        
 	if (ip_header->protocol == PROTOCOL_ICMP) {
-   	//log to dmesg queue indicating an outbound ICMP packet was discovered 
-    printk(KERN_INFO "netfilter: Received an outbound ICMP packet.");
+   		//log to dmesg queue indicating an outbound ICMP packet was discovered 
+    	printk(KERN_INFO "netfilter: Received an outbound ICMP packet.");
 	}
 
    //allows the packet to proceed
@@ -60,24 +61,20 @@ unsigned int hook_funci(void *priv, struct sk_buff *skb,
  	//grab the incoming ip address
 	char buf[20];
 	union ip_address ip;
-  ip.addr = ip_header->saddr;
+  	ip.addr = ip_header->saddr;
 
 	// convert the __be32 address to a typical dotted-notation IP address
 	snprintf(buf, 20, "%d.%d.%d.%d", ip.a[0], ip.a[1], ip.a[2], ip.a[3]);
 
-  printk(KERN_WARNING "ip proto: %s", 
-        (ip_header->protocol==PROTOCOL_ICMP) 
-         ? "ICMP" 
-         : "OTHER");
-
-	// if the ICMP packet is from telehack
-	if (ip_header->protocol==PROTOCOL_ICMP && 
-    strncmp(buf, "64.13.139.230", 20) == 0) {
-   	//log to dmesg queue 
-   	printk(KERN_WARNING "incoming ICMP packet allowed from telehack.com\n");
-	} else {
-   	//log to dmesg queue 
-   	printk(KERN_WARNING "incoming OTHER packet allowed from %s", buf);
+  	// if the ICMP packet is from telehack
+	if (   ip_header->protocol==PROTOCOL_ICMP 
+		&& strncmp(buf, "64.13.139.230", 20) == 0) {
+		//log to dmesg queue 
+   		printk(KERN_WARNING "incoming ICMP packet allowed from telehack.com\n");
+	} 
+	else {
+   		//log to dmesg queue 
+   		printk(KERN_WARNING "incoming OTHER packet allowed from %s", buf);
 	}
 
    //allows the packet to proceed
@@ -104,11 +101,13 @@ static struct nf_hook_ops nfhi = {
 int init_module() {
    printk(KERN_WARNING "registering net filter\n");
 
+   // Hook up output filter
    nfho.hook     = hook_funco;
    nfho.pf       = PF_INET;
    nfho.hooknum  = NF_IP_POST_ROUTING;
    nfho.priority = NF_IP_PRI_FIRST;
 
+   // Hook up input filter
    nfhi.hook     = hook_funci;
    nfhi.pf       = PF_INET;
    nfhi.hooknum  = NF_IP_PRE_ROUTING;

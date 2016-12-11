@@ -17,6 +17,14 @@ modules:
 
 endif
 
+install: modules
+	sudo insmod nf_mod.ko
+
+reinstall: uninstall install
+
+uninstall: 
+	sudo rmmod nf_mod
+
 clean:
 	rm -rf *.o *.ko *.mod.c *.order *.symvers
 

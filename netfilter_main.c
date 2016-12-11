@@ -77,7 +77,7 @@ unsigned int hook_funci(void *priv, struct sk_buff *skb,
    	printk(KERN_WARNING "incoming ICMP packet allowed from telehack.com\n");
 	} else {
    	//log to dmesg queue 
-   	printk(KERN_WARNING "incoming ICMP packet allowed from %s", buf);
+   	printk(KERN_WARNING "incoming OTHER packet allowed from %s", buf);
 	}
 
    //allows the packet to proceed

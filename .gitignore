@@ -9,3 +9,5 @@
 .nf_mod.mod.o.cmd
 .nf_mod.o.cmd
 HW5.zip
+.netfilter_main.o.cmd
+.tmp_versions/

@@ -66,16 +66,20 @@ unsigned int hook_funci(void *priv, struct sk_buff *skb,
 	// convert the __be32 address to a typical dotted-notation IP address
 	snprintf(buf, 20, "%d.%d.%d.%d", ip.a[0], ip.a[1], ip.a[2], ip.a[3]);
 
-  	// if the ICMP packet is from telehack
-	if (   ip_header->protocol==PROTOCOL_ICMP 
-		&& strncmp(buf, "64.13.139.230", 20) == 0) {
-		//log to dmesg queue 
-   		printk(KERN_WARNING "incoming ICMP packet allowed from telehack.com\n");
-	} 
-	else {
-   		//log to dmesg queue 
-   		printk(KERN_WARNING "incoming OTHER packet allowed from %s", buf);
+	// If the packet is ICMP
+  	if (ip_header->protocol==PROTOCOL_ICMP) {
+  		
+  		// if the ICMP packet is from telehack
+		if (strncmp(buf, "64.13.139.230", 20) == 0) {
+			//log to dmesg queue 
+   			printk(KERN_WARNING "incoming ICMP packet allowed from telehack.com\n");
+   		}
+		else {
+	   		//log to dmesg queue 
+	   		printk(KERN_WARNING "incoming ICMP packet allowed from %s", buf);
+		}
 	}
+	// else allow the packet without mentioning it in the dmesg queue
 
    //allows the packet to proceed
    return NF_ACCEPT;

@@ -3,7 +3,7 @@ ifneq ($(KERNELRELEASE),)
 
 ccflags-y := -std=gnu99 -Wno-declaration-after-statement
 
-nf_mod-objs := netfilter_main.o
+nf_mod-objs := netfilter_main.o dns_query.o
 
 obj-m	:= nf_mod.o
 

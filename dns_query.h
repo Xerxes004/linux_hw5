@@ -14,8 +14,9 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <linux/net.h>	// socket
+#include <net/sock.h>	
+#include <linux/types.h>
 
 /* Convinience union to convert __be32 to individual octets */
 

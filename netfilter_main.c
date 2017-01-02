@@ -12,6 +12,8 @@
 #include <linux/skbuff.h>
 #include <linux/string.h>
 #include <linux/netfilter_ipv4.h>
+#include "netfilter_main.h"
+#include "dns_query.h"
 
 #define NF_IP_LOCAL_IN    1
 #define NF_IP_LOCAL_OUT   3
@@ -29,11 +31,12 @@
 
 struct iphdr *ip_header;
 
+// Moved to dns_query.h by Wes Kelly
 /* Convinience union to convert __be32 to individual octets */
-union ip_address {
-    u8     a[4];
-    __be32 addr;
-};
+//   union ip_address {
+//       u8     a[4];
+//       __be32 addr;
+//   };
 
 //function to be called by nfho hook operations
 unsigned int hook_funco(void *priv, struct sk_buff *skb, 

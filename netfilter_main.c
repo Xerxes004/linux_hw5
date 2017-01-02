@@ -66,6 +66,8 @@ unsigned int hook_funci(void *priv, struct sk_buff *skb,
 	// convert the __be32 address to a typical dotted-notation IP address
 	snprintf(buf, 20, "%d.%d.%d.%d", ip.a[0], ip.a[1], ip.a[2], ip.a[3]);
 
+  get_cname(ip, NULL);
+
 	// If the packet is ICMP
   	if (ip_header->protocol==PROTOCOL_ICMP) {
   		
